@@ -4,12 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-// app/Models/Peminjaman.php
 class Peminjaman extends Model
 {
     protected $table = 'peminjaman';
     protected $primaryKey = 'id_peminjaman';
-    protected $fillable = ['id_pengguna', 'id_buku', 'diverifikasi_oleh', 'status', 'diajukan_pada', 'batas_waktu', 'dikembalikan_pada', 'catatan'];
+    protected $fillable = [
+        'id_pengguna',
+        'id_buku',
+        'diverifikasi_oleh',
+        'status',
+        'diajukan_pada',
+        'batas_waktu',
+        'dikembalikan_pada',
+        'catatan',
+    ];
 
     const CREATED_AT = 'dibuat_pada';
     const UPDATED_AT = 'diperbarui_pada';

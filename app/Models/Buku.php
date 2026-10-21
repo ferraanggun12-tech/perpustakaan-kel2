@@ -4,12 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-// app/Models/Buku.php
 class Buku extends Model
 {
     protected $table = 'buku';
     protected $primaryKey = 'id_buku';
-    protected $fillable = ['id_kategori', 'judul', 'penulis', 'jenis', 'deskripsi', 'gambar_sampul', 'path_berkas', 'stok'];
+    protected $fillable = [
+        'id_kategori',
+        'judul',
+        'penulis',
+        'jenis',
+        'deskripsi',
+        'gambar_sampul',
+        'path_berkas',
+        'stok',
+    ];
 
     const CREATED_AT = 'dibuat_pada';
     const UPDATED_AT = 'diperbarui_pada';

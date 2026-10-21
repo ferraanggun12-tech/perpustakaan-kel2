@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-// app/Models/Pengguna.php
 class Pengguna extends Model
 {
     protected $table = 'pengguna';
@@ -17,5 +16,10 @@ class Pengguna extends Model
     public function peminjaman()
     {
         return $this->hasMany(Peminjaman::class, 'id_pengguna', 'id_pengguna');
+    }
+
+    public function peminjamanDiverifikasi()
+    {
+        return $this->hasMany(Peminjaman::class, 'diverifikasi_oleh', 'id_pengguna');
     }
 }

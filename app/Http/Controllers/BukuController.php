@@ -8,9 +8,16 @@ use Illuminate\Http\Request;
 
 class BukuController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $buku = Buku::with('kategori')->get();
+        $query = Buku::with('kategori');
+
+        if ($request->filled('jenis')) {
+            $query->where('jenis', $request->jenis);
+        }
+
+        $buku = $query->get();
+
         return view('buku.index', compact('buku'));
     }
 

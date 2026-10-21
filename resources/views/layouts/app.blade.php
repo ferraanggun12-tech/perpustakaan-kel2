@@ -26,6 +26,7 @@
         <a href="{{ url('/') }}">Dashboard</a>
         <a href="{{ route('kategori.index') }}">Kategori</a>
         <a href="{{ route('buku.index') }}">Kelola Buku</a>
+        <a href="{{ route('peminjaman.index') }}">Peminjaman</a>
     </div>
     <div class="main">
         @yield('content')
