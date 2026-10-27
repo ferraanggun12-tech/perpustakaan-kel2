@@ -1,9 +1,11 @@
 @extends('layouts.app')
 
+@section('title', 'Tambah Buku')
+
 @section('content')
 <h1>Tambah Buku</h1>
 
-<form action="{{ route('buku.store') }}" method="POST">
+<form action="{{ route('buku.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
     <label>Kategori</label>
     <select name="id_kategori">
@@ -36,6 +38,11 @@
 
     <label>Stok (khusus buku fisik)</label>
     <input type="number" name="stok" value="{{ old('stok') }}">
+    @error('stok')<div class="error">{{ $message }}</div>@enderror
+
+    <label>Foto sampul (jpg, png, webp, maks 2 MB)</label>
+    <input type="file" name="gambar_sampul" accept="image/*">
+    @error('gambar_sampul')<div class="error">{{ $message }}</div>@enderror
 
     <button type="submit">Simpan</button>
 </form>

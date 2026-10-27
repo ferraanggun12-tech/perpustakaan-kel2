@@ -57,17 +57,39 @@ class PeminjamanController extends Controller
             'catatan'      => 'nullable|string',
         ]);
 
+        $status = $validated['status'];
+
+        // Disetujui langsung dianggap dipinjam
+        if ($status === 'disetujui') {
+            $status = 'dipinjam';
+        }
+
+        // Batas waktu: pakai isian admin, jika kosong pakai yang lama, jika belum ada = hari ini + 7 hari
+        $batasWaktu = $validated['batas_waktu'] ?? $peminjaman->batas_waktu;
+        if ($status === 'dipinjam' && !$batasWaktu) {
+            $batasWaktu = now()->addDays(7)->toDateString();
+        }
+
         $peminjaman->update([
-            'status'             => $validated['status'],
-            'batas_waktu'        => $validated['batas_waktu'] ?? $peminjaman->batas_waktu,
-            'catatan'            => $validated['catatan'] ?? $peminjaman->catatan,
-            'diverifikasi_oleh'  => auth()->id() ?? 1,
-            'dikembalikan_pada'  => $validated['status'] === 'selesai' ? now() : $peminjaman->dikembalikan_pada,
+            'status'            => $status,
+            'batas_waktu'       => $batasWaktu,
+            'catatan'           => $validated['catatan'] ?? $peminjaman->catatan,
+            'diverifikasi_oleh' => auth()->id() ?? 1,
+            'dikembalikan_pada' => $status === 'selesai'
+                ? ($peminjaman->dikembalikan_pada ?? now())
+                : $peminjaman->dikembalikan_pada,
         ]);
+
+        $pesan = match ($status) {
+            'dipinjam' => 'Peminjaman disetujui. Batas pengembalian: ' . \Carbon\Carbon::parse($batasWaktu)->translatedFormat('d M Y') . '.',
+            'selesai'  => 'Buku ditandai sudah dikembalikan.',
+            'ditolak'  => 'Peminjaman ditolak.',
+            default    => 'Status peminjaman berhasil diperbarui.',
+        };
 
         return redirect()
             ->route('peminjaman.index')
-            ->with('success', 'Status peminjaman berhasil diperbarui.');
+            ->with('success', $pesan);
     }
 
     public function destroy(Peminjaman $peminjaman)

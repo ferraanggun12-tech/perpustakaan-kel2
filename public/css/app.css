@@ -1,0 +1,92 @@
+:root { --primary: #205D98; --success: #2e9e5b; --danger: #d64545; --warning: #e8a317; --gray: #6c7a89; }
+body { margin: 0; font-family: Arial, sans-serif; display: flex; background: #f4f6fb; color: #2d3748; }
+.sidebar { width: 220px; height: 100vh; background: #205D98; color: #fff; padding: 20px 0; position: fixed; z-index: 3; }
+.sidebar h2 { text-align: center; font-size: 18px; margin-bottom: 30px; }
+.sidebar a { display: block; color: #fff; text-decoration: none; padding: 12px 20px; }
+.sidebar a:hover { background: rgba(255,255,255,0.15); }
+.main { margin-left: 220px; padding: 30px; width: 100%; position: relative; z-index: 2; }
+h1 { margin-top: 0; }
+
+table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+th, td { padding: 10px; text-align: left; border-bottom: 1px solid #e6e9f0; }
+th { background: #205D98; color: #fff; }
+tr:hover td { background: #f7f9fd; }
+
+.alert { background: #d4edda; color: #1d6b3a; padding: 10px; margin-bottom: 15px; border-radius: 4px; }
+.error { color: var(--danger); font-size: 13px; }
+form label { display: block; margin-top: 10px; }
+input, select, textarea { width: 300px; padding: 6px; margin-top: 4px; border: 1px solid #c5ccd8; border-radius: 4px; }
+
+button, a.btn { display: inline-block; margin-top: 15px; padding: 8px 16px; border: 0; border-radius: 4px; background: var(--primary); color: #fff; cursor: pointer; font-size: 14px; text-decoration: none; }
+button:hover { opacity: 0.88; }
+td button, td a { margin-top: 0; }
+
+/* warna aksi otomatis */
+a[href$="/create"] { display: inline-block; padding: 8px 16px; border-radius: 4px; background: var(--success); color: #fff; text-decoration: none; }
+td a[href$="/edit"] { display: inline-block; padding: 6px 12px; border-radius: 4px; background: var(--warning); color: #fff; text-decoration: none; }
+form input[name="_method"][value="DELETE"] ~ button { background: var(--danger); }
+form input[name="status"][value="disetujui"] ~ button { background: var(--success); }
+form input[name="status"][value="ditolak"] ~ button { background: var(--danger); }
+.filter-form a { display: inline-block; padding: 8px 16px; border-radius: 4px; background: var(--gray); color: #fff; text-decoration: none; }
+
+.filter-form { margin: 15px 0; }
+.filter-form input, .filter-form select { width: auto; margin: 0 6px 6px 0; }
+.filter-form button { margin-top: 0; }
+.info { margin: 10px 0; font-size: 14px; }
+.pagination { list-style: none; display: flex; gap: 6px; padding: 0; margin-top: 15px; }
+.pagination li a, .pagination li span { display: block; padding: 6px 10px; border: 1px solid #c5ccd8; border-radius: 4px; text-decoration: none; color: #205D98; background: #fff; }
+.pagination li.active span { background: #205D98; color: #fff; border-color: #205D98; }
+.pagination li.disabled span { color: #aaa; }
+
+/* dashboard */
+.banner { position: absolute; top: 0; left: 0; right: 0; height: 260px; background: linear-gradient(135deg, #7b8de8, #a47be0); z-index: -1; }
+.dash-title { color: #fff; font-size: 14px; letter-spacing: 1px; margin-bottom: 40px; }
+.stats { display: flex; gap: 20px; flex-wrap: wrap; }
+.stat { flex: 1; min-width: 150px; background: #fff; border-radius: 10px; padding: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 14px rgba(0,0,0,0.12); }
+.stat small { display: block; font-size: 11px; font-weight: bold; color: #555; }
+.stat strong { font-size: 36px; color: #3b4a8f; }
+.stat .ico { width: 42px; height: 42px; border-radius: 50%; background: #5b6fd6; color: #fff; text-align: center; line-height: 42px; font-weight: bold; }
+.panels { display: flex; gap: 20px; margin-top: 25px; flex-wrap: wrap; }
+.panel { background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 4px 14px rgba(0,0,0,0.12); }
+.panel.wide { flex: 2; min-width: 320px; }
+.panel.side { flex: 1; min-width: 260px; }
+.panel h3 { margin: 0; font-weight: normal; font-size: 22px; color: #555; }
+.panel p.sub { margin: 2px 0 10px; font-size: 12px; color: #777; }
+.panel table { box-shadow: none; margin-top: 5px; }
+.panel th { background: #fff; color: #888; font-size: 12px; border-bottom: 1px solid #e6e9f0; }
+.chart { display: flex; align-items: flex-end; gap: 12px; height: 200px; margin-top: 15px; border-bottom: 1px solid #ccc; }
+.bar-wrap { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; font-size: 12px; }
+.bar { width: 100%; background: #5b6fd6; border-radius: 3px 3px 0 0; }
+.chart-label { display: flex; gap: 12px; font-size: 12px; margin-top: 5px; }
+.chart-label span { flex: 1; text-align: center; }
+.badge { padding: 3px 8px; border-radius: 10px; font-size: 12px; color: #fff; background: var(--gray); }
+.badge.diajukan { background: var(--warning); }
+.badge.disetujui { background: var(--success); }
+.badge.ditolak { background: var(--danger); }
+
+/* revisi warna: sidebar putih, latar dashboard #205D98 */
+.sidebar { background: #ffffff; color: #2d3748; box-shadow: 2px 0 8px rgba(0,0,0,0.08); }
+.sidebar h2 { color: #205D98; }
+.sidebar a { color: #2d3748; font-weight: bold; }
+.sidebar a:hover { background: #eef3fa; color: #205D98; }
+.banner { background: #205D98; }
+
+/* kartu statistik gaya pastel */
+.stat { border-radius: 2px; box-shadow: none; padding: 20px 18px; }
+.stat strong { display: block; font-size: 30px; color: #111; line-height: 1.1; }
+.stat span { display: block; margin-top: 4px; font-size: 13px; color: #222; }
+.stat .ico { width: 44px; height: 44px; line-height: normal; background: #fff; display: flex; align-items: center; justify-content: center; }
+.c-yellow { background: #f5f5b8; }
+.c-blue { background: #cfe4e8; }
+.c-beige { background: #e5e0de; }
+.c-green { background: #d3efc4; }
+.c-lilac { background: #e6dcf2; }
+
+/* status peminjaman */
+.badge.dipinjam { background: #205D98; }
+.badge.selesai { background: #6c7a89; }
+.terlambat { color: #d64545; font-weight: bold; font-size: 12px; margin-left: 4px; }
+
+/* sampul buku */
+.thumb { width: 40px; height: 56px; object-fit: cover; border-radius: 3px; border: 1px solid #ccc; }
+.thumb-besar { width: 120px; height: 168px; object-fit: cover; border-radius: 4px; border: 1px solid #ccc; margin: 6px 0; }

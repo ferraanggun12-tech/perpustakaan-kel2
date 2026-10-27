@@ -31,4 +31,28 @@ class Buku extends Model
     {
         return $this->hasMany(Peminjaman::class, 'id_buku', 'id_buku');
     }
+
+    public function getSampulUrlAttribute()
+    {
+        if ($this->gambar_sampul && file_exists(public_path($this->gambar_sampul))) {
+            return asset($this->gambar_sampul);
+        }
+
+        return asset('img/sampul-default.svg');
+    }
+
+    public static function simpanSampul($file)
+    {
+        $nama = uniqid('sampul_') . '.' . $file->extension();
+        $file->move(public_path('sampul'), $nama);
+
+        return 'sampul/' . $nama;
+    }
+
+    public static function hapusSampul($path)
+    {
+        if ($path && file_exists(public_path($path))) {
+            @unlink(public_path($path));
+        }
+    }
 }
