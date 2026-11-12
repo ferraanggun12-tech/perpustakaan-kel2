@@ -57,3 +57,12 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Akun Demo (khusus pengujian lokal)
+
+| Peran | Email | Password |
+| --- | --- | --- |
+| Admin | admin@sibiner.test | password123 |
+| Pengguna | mahasiswa@sibiner.test | password123 |
+
+Akun dibuat oleh `PenggunaSeeder` (`php artisan db:seed --class=PenggunaSeeder`). Password disimpan dalam bentuk hash. Jangan memakai password ini di server produksi.

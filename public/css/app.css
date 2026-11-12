@@ -90,3 +90,14 @@ form input[name="status"][value="ditolak"] ~ button { background: var(--danger);
 /* sampul buku */
 .thumb { width: 40px; height: 56px; object-fit: cover; border-radius: 3px; border: 1px solid #ccc; }
 .thumb-besar { width: 120px; height: 168px; object-fit: cover; border-radius: 4px; border: 1px solid #ccc; margin: 6px 0; }
+
+/* login dan identitas pengguna */
+.login-wrap { width: 360px; margin: 80px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 14px rgba(0,0,0,0.12); }
+.login-wrap h1 { margin: 0; color: #205D98; }
+.login-wrap p { margin-top: 4px; color: #6c7a89; }
+.login-wrap input { width: 100%; box-sizing: border-box; }
+.login-wrap button { width: 100%; }
+.sidebar-user { position: absolute; bottom: 20px; left: 0; right: 0; padding: 0 20px; border-top: 1px solid #e6e9f0; padding-top: 15px; }
+.sidebar-user-nama { font-weight: bold; color: #2d3748; }
+.sidebar-user small { color: #6c7a89; }
+.sidebar-user button { width: 100%; margin-top: 10px; background: #d64545; }

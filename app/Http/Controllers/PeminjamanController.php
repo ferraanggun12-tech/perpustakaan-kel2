@@ -10,9 +10,14 @@ class PeminjamanController extends Controller
 {
     public function index()
     {
-        $peminjaman = Peminjaman::with(['pengguna', 'buku'])
-            ->orderByDesc('diajukan_pada')
-            ->get();
+        $query = Peminjaman::with(['pengguna', 'buku'])->orderByDesc('diajukan_pada');
+
+        // Pengguna biasa hanya melihat peminjamannya sendiri
+        if (!auth()->user()->isAdmin()) {
+            $query->where('id_pengguna', auth()->id());
+        }
+
+        $peminjaman = $query->get();
 
         return view('peminjaman.index', compact('peminjaman'));
     }
@@ -32,7 +37,7 @@ class PeminjamanController extends Controller
         ]);
 
         Peminjaman::create([
-            'id_pengguna'   => auth()->id() ?? 1,
+            'id_pengguna'   => auth()->id(),
             'id_buku'       => $validated['id_buku'],
             'catatan'       => $validated['catatan'] ?? null,
             'status'        => 'diajukan',
@@ -59,12 +64,10 @@ class PeminjamanController extends Controller
 
         $status = $validated['status'];
 
-        // Disetujui langsung dianggap dipinjam
         if ($status === 'disetujui') {
             $status = 'dipinjam';
         }
 
-        // Batas waktu: pakai isian admin, jika kosong pakai yang lama, jika belum ada = hari ini + 7 hari
         $batasWaktu = $validated['batas_waktu'] ?? $peminjaman->batas_waktu;
         if ($status === 'dipinjam' && !$batasWaktu) {
             $batasWaktu = now()->addDays(7)->toDateString();
@@ -74,7 +77,7 @@ class PeminjamanController extends Controller
             'status'            => $status,
             'batas_waktu'       => $batasWaktu,
             'catatan'           => $validated['catatan'] ?? $peminjaman->catatan,
-            'diverifikasi_oleh' => auth()->id() ?? 1,
+            'diverifikasi_oleh' => auth()->id(),
             'dikembalikan_pada' => $status === 'selesai'
                 ? ($peminjaman->dikembalikan_pada ?? now())
                 : $peminjaman->dikembalikan_pada,
