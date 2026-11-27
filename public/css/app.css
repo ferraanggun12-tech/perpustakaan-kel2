@@ -107,3 +107,6 @@ form input[name="status"][value="ditolak"] ~ button { background: var(--danger);
 
 /* status diserahkan */
 .badge.diserahkan { background: #8e6bd1; }
+
+/* pesan error */
+.alert-error { background: #fdecea; color: #b3261e; border-color: #f5c2c0; }

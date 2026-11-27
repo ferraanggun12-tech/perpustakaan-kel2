@@ -2,12 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Peminjaman;
+use App\Exceptions\AturanBisnisException;
 use App\Models\Buku;
+use App\Models\Peminjaman;
+use App\Services\PeminjamanService;
 use Illuminate\Http\Request;
 
 class PeminjamanController extends Controller
 {
+    public function __construct(private PeminjamanService $layanan)
+    {
+    }
+
     public function index()
     {
         $query = Peminjaman::with(['pengguna', 'buku'])->orderByDesc('diajukan_pada');
@@ -36,13 +42,14 @@ class PeminjamanController extends Controller
             'catatan' => 'nullable|string',
         ]);
 
-        Peminjaman::create([
-            'id_pengguna'   => auth()->id(),
-            'id_buku'       => $validated['id_buku'],
-            'catatan'       => $validated['catatan'] ?? null,
-            'status'        => 'diajukan',
-            'diajukan_pada' => now(),
-        ]);
+        try {
+            $this->layanan->ajukan(auth()->user(), (int) $validated['id_buku'], $validated['catatan'] ?? null);
+        } catch (AturanBisnisException $e) {
+            return back()->withErrors(['id_buku' => $e->getMessage()])->withInput();
+        } catch (\Throwable $e) {
+            report($e);
+            return back()->with('error', 'Pengajuan gagal diproses. Silakan coba lagi.')->withInput();
+        }
 
         return redirect()
             ->route('peminjaman.index')
@@ -51,48 +58,45 @@ class PeminjamanController extends Controller
 
     public function edit(Peminjaman $peminjaman)
     {
-        return view('peminjaman.edit', compact('peminjaman'));
+        // Pilihan status hanya yang boleh menurut alur
+        $opsi = array_merge([$peminjaman->status], PeminjamanService::TRANSISI[$peminjaman->status] ?? []);
+
+        return view('peminjaman.edit', compact('peminjaman', 'opsi'));
     }
 
     public function update(Request $request, Peminjaman $peminjaman)
     {
         $validated = $request->validate([
-            'status'       => 'required|in:diajukan,disetujui,ditolak,dipinjam,diserahkan,selesai',
-            'batas_waktu'  => 'nullable|date',
-            'catatan'      => 'nullable|string',
+            'status'      => 'required|in:diajukan,disetujui,ditolak,dipinjam,diserahkan,selesai',
+            'batas_waktu' => 'nullable|date',
+            'catatan'     => 'nullable|string',
         ]);
 
-        $status = $validated['status'];
+        $status = $validated['status'] === 'disetujui' ? 'dipinjam' : $validated['status'];
 
-        if ($status === 'disetujui') {
-            $status = 'dipinjam';
+        try {
+            $hasil = $this->layanan->ubahStatus(
+                $peminjaman,
+                $status,
+                auth()->id(),
+                $validated['batas_waktu'] ?? null,
+                $validated['catatan'] ?? null
+            );
+        } catch (AturanBisnisException $e) {
+            return redirect()->route('peminjaman.index')->with('error', $e->getMessage());
+        } catch (\Throwable $e) {
+            report($e);
+            return redirect()->route('peminjaman.index')->with('error', 'Perubahan status gagal diproses.');
         }
 
-        $batasWaktu = $validated['batas_waktu'] ?? $peminjaman->batas_waktu;
-        if ($status === 'dipinjam' && !$batasWaktu) {
-            $batasWaktu = now()->addDays(7)->toDateString();
-        }
-
-        $peminjaman->update([
-            'status'            => $status,
-            'batas_waktu'       => $batasWaktu,
-            'catatan'           => $validated['catatan'] ?? $peminjaman->catatan,
-            'diverifikasi_oleh' => auth()->id(),
-            'dikembalikan_pada' => $status === 'selesai'
-                ? ($peminjaman->dikembalikan_pada ?? now())
-                : $peminjaman->dikembalikan_pada,
-        ]);
-
-        $pesan = match ($status) {
-            'dipinjam' => 'Peminjaman disetujui. Batas pengembalian: ' . \Carbon\Carbon::parse($batasWaktu)->translatedFormat('d M Y') . '.',
+        $pesan = match ($hasil->status) {
+            'dipinjam' => 'Peminjaman disetujui. Batas pengembalian: ' . \Carbon\Carbon::parse($hasil->batas_waktu)->translatedFormat('d M Y') . '.',
             'selesai'  => 'Pengembalian buku sudah dikonfirmasi.',
             'ditolak'  => 'Peminjaman ditolak.',
-            default    => 'Status peminjaman berhasil diperbarui.',
+            default    => 'Peminjaman berhasil diperbarui.',
         };
 
-        return redirect()
-            ->route('peminjaman.index')
-            ->with('success', $pesan);
+        return redirect()->route('peminjaman.index')->with('success', $pesan);
     }
 
     // Anggota mengembalikan buku miliknya sendiri
@@ -101,24 +105,22 @@ class PeminjamanController extends Controller
         abort_unless($peminjaman->id_pengguna === auth()->id(), 403, 'Ini bukan peminjaman Anda.');
         abort_unless($peminjaman->status === 'dipinjam', 403, 'Buku ini tidak sedang dipinjam.');
 
-        // E-book: langsung selesai
-        if ($peminjaman->buku->jenis === 'ebook') {
-            $peminjaman->update([
-                'status'            => 'selesai',
-                'dikembalikan_pada' => now(),
-            ]);
+        $ebook = $peminjaman->buku->jenis === 'ebook';
 
-            return redirect()
-                ->route('peminjaman.index')
-                ->with('success', 'E-book berhasil dikembalikan.');
+        try {
+            $this->layanan->ubahStatus($peminjaman, $ebook ? 'selesai' : 'diserahkan', auth()->id());
+        } catch (AturanBisnisException $e) {
+            return redirect()->route('peminjaman.index')->with('error', $e->getMessage());
+        } catch (\Throwable $e) {
+            report($e);
+            return redirect()->route('peminjaman.index')->with('error', 'Pengembalian gagal diproses.');
         }
-
-        // Buku fisik: menunggu konfirmasi petugas
-        $peminjaman->update(['status' => 'diserahkan']);
 
         return redirect()
             ->route('peminjaman.index')
-            ->with('success', 'Pengembalian dicatat. Serahkan buku ke petugas untuk dikonfirmasi.');
+            ->with('success', $ebook
+                ? 'E-book berhasil dikembalikan.'
+                : 'Pengembalian dicatat. Serahkan buku ke petugas untuk dikonfirmasi.');
     }
 
     public function destroy(Peminjaman $peminjaman)

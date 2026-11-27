@@ -12,6 +12,9 @@
 @if (session('success'))
     <div class="alert">{{ session('success') }}</div>
 @endif
+@if (session('error'))
+    <div class="alert alert-error">{{ session('error') }}</div>
+@endif
 
 @if ($anggota)
     <a href="{{ route('peminjaman.create') }}">Ajukan Peminjaman</a>
@@ -106,3 +109,4 @@
     @endforelse
 </table>
 @endsection
+

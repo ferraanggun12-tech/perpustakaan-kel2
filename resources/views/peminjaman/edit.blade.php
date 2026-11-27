@@ -12,10 +12,10 @@
     @csrf
     @method('PUT')
 
-    <label>Status</label>
+    <label>Status (hanya transisi yang valid)</label>
     <select name="status">
-        @foreach (['diajukan' => 'Diajukan', 'disetujui' => 'Disetujui', 'ditolak' => 'Ditolak', 'dipinjam' => 'Dipinjam', 'diserahkan' => 'Diserahkan', 'selesai' => 'Selesai'] as $nilai => $label)
-            <option value="{{ $nilai }}" @selected(old('status', $peminjaman->status) == $nilai)>{{ $label }}</option>
+        @foreach ($opsi as $nilai)
+            <option value="{{ $nilai }}" @selected(old('status', $peminjaman->status) == $nilai)>{{ ucfirst($nilai) }}</option>
         @endforeach
     </select>
     @error('status')<div class="error">{{ $message }}</div>@enderror
