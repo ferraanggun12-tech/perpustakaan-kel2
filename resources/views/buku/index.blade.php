@@ -3,14 +3,14 @@
 @section('title', 'Daftar Buku')
 
 @section('content')
-@php $admin = Auth::user()->isAdmin(); @endphp
-<h1>{{ $admin ? 'Kelola Buku' : 'Daftar Buku' }}</h1>
+@php $staf = Auth::user()->isStaf(); @endphp
+<h1>{{ $staf ? 'Kelola Buku' : 'Daftar Buku' }}</h1>
 
 @if (session('success'))
     <div class="alert">{{ session('success') }}</div>
 @endif
 
-@if ($admin)
+@if ($staf)
     <a href="{{ route('buku.create') }}">Tambah Buku</a>
 @endif
 
@@ -54,7 +54,7 @@
 <table>
     <tr>
         <th>No</th><th>Sampul</th><th>Judul</th><th>Penulis</th><th>Jenis</th><th>Kategori</th>
-        @if ($admin)<th>Aksi</th>@endif
+        @if ($staf)<th>Aksi</th>@endif
     </tr>
     @forelse ($buku as $b)
         <tr>
@@ -64,7 +64,7 @@
             <td>{{ $b->penulis }}</td>
             <td>{{ $b->jenis }}</td>
             <td>{{ $b->kategori->nama }}</td>
-            @if ($admin)
+            @if ($staf)
                 <td>
                     <a href="{{ route('buku.edit', $b) }}">Edit</a>
                     <form action="{{ route('buku.destroy', $b) }}" method="POST" style="display:inline">
@@ -77,7 +77,7 @@
         </tr>
     @empty
         <tr>
-            <td colspan="{{ $admin ? 7 : 6 }}">
+            <td colspan="{{ $staf ? 7 : 6 }}">
                 @if (request()->hasAny(['search', 'jenis', 'id_kategori']))
                     Tidak ada buku yang cocok dengan pencarian atau filter. <a href="{{ route('buku.index') }}">Reset filter</a>
                 @else

@@ -12,8 +12,8 @@ class PeminjamanController extends Controller
     {
         $query = Peminjaman::with(['pengguna', 'buku'])->orderByDesc('diajukan_pada');
 
-        // Pengguna biasa hanya melihat peminjamannya sendiri
-        if (!auth()->user()->isAdmin()) {
+        // Anggota hanya melihat peminjamannya sendiri
+        if (!auth()->user()->isStaf()) {
             $query->where('id_pengguna', auth()->id());
         }
 
@@ -57,7 +57,7 @@ class PeminjamanController extends Controller
     public function update(Request $request, Peminjaman $peminjaman)
     {
         $validated = $request->validate([
-            'status'       => 'required|in:diajukan,disetujui,ditolak,dipinjam,selesai',
+            'status'       => 'required|in:diajukan,disetujui,ditolak,dipinjam,diserahkan,selesai',
             'batas_waktu'  => 'nullable|date',
             'catatan'      => 'nullable|string',
         ]);
@@ -85,7 +85,7 @@ class PeminjamanController extends Controller
 
         $pesan = match ($status) {
             'dipinjam' => 'Peminjaman disetujui. Batas pengembalian: ' . \Carbon\Carbon::parse($batasWaktu)->translatedFormat('d M Y') . '.',
-            'selesai'  => 'Buku ditandai sudah dikembalikan.',
+            'selesai'  => 'Pengembalian buku sudah dikonfirmasi.',
             'ditolak'  => 'Peminjaman ditolak.',
             default    => 'Status peminjaman berhasil diperbarui.',
         };
@@ -93,6 +93,32 @@ class PeminjamanController extends Controller
         return redirect()
             ->route('peminjaman.index')
             ->with('success', $pesan);
+    }
+
+    // Anggota mengembalikan buku miliknya sendiri
+    public function kembalikan(Peminjaman $peminjaman)
+    {
+        abort_unless($peminjaman->id_pengguna === auth()->id(), 403, 'Ini bukan peminjaman Anda.');
+        abort_unless($peminjaman->status === 'dipinjam', 403, 'Buku ini tidak sedang dipinjam.');
+
+        // E-book: langsung selesai
+        if ($peminjaman->buku->jenis === 'ebook') {
+            $peminjaman->update([
+                'status'            => 'selesai',
+                'dikembalikan_pada' => now(),
+            ]);
+
+            return redirect()
+                ->route('peminjaman.index')
+                ->with('success', 'E-book berhasil dikembalikan.');
+        }
+
+        // Buku fisik: menunggu konfirmasi petugas
+        $peminjaman->update(['status' => 'diserahkan']);
+
+        return redirect()
+            ->route('peminjaman.index')
+            ->with('success', 'Pengembalian dicatat. Serahkan buku ke petugas untuk dikonfirmasi.');
     }
 
     public function destroy(Peminjaman $peminjaman)

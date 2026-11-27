@@ -29,9 +29,29 @@ class Pengguna extends Authenticatable
         return '';
     }
 
+    public function hasRole(string ...$roles): bool
+    {
+        return in_array($this->peran, $roles, true);
+    }
+
     public function isAdmin(): bool
     {
         return $this->peran === 'admin';
+    }
+
+    // Admin dan petugas mengelola data perpustakaan
+    public function isStaf(): bool
+    {
+        return in_array($this->peran, ['admin', 'petugas'], true);
+    }
+
+    public function getLabelPeranAttribute(): string
+    {
+        return [
+            'admin'    => 'Admin',
+            'petugas'  => 'Petugas Perpustakaan',
+            'pengguna' => 'Anggota',
+        ][$this->peran] ?? ucfirst($this->peran);
     }
 
     public function peminjaman()

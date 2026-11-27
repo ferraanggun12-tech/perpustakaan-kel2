@@ -10,7 +10,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $admin = auth()->user()->isAdmin();
+        $admin = auth()->user()->isStaf();
 
         // Admin melihat semua data, pengguna biasa hanya miliknya
         $milik = fn ($q) => $admin ? $q : $q->where('id_pengguna', auth()->id());
@@ -20,7 +20,7 @@ class DashboardController extends Controller
         $jumlahFisik = Buku::where('jenis', 'fisik')->count();
         $jumlahKategori = Kategori::count();
         $jumlahPeminjaman = $milik(Peminjaman::query())->count();
-        $menunggu = $milik(Peminjaman::query()->where('status', 'diajukan'))->count();
+        $menunggu = $milik(Peminjaman::query()->whereIn('status', ['diajukan', 'diserahkan']))->count();
 
         $terbaru = $milik(Peminjaman::with(['pengguna', 'buku']))
             ->orderByDesc('diajukan_pada')
@@ -52,3 +52,6 @@ class DashboardController extends Controller
         ));
     }
 }
+
+
+

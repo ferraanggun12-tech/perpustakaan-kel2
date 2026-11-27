@@ -20,6 +20,15 @@ class PenggunaSeeder extends Seeder
         );
 
         Pengguna::updateOrCreate(
+            ['email' => 'petugas@sibiner.test'],
+            [
+                'nama'       => 'Petugas Perpustakaan',
+                'kata_sandi' => Hash::make('password123'),
+                'peran'      => 'petugas',
+            ]
+        );
+
+        Pengguna::updateOrCreate(
             ['email' => 'mahasiswa@sibiner.test'],
             [
                 'nama'       => 'Mahasiswa Demo',

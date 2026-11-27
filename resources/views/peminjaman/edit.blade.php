@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Ubah Status Peminjaman')
+
 @section('content')
 <h1>Ubah Status Peminjaman</h1>
 
@@ -12,11 +14,9 @@
 
     <label>Status</label>
     <select name="status">
-        <option value="diajukan" {{ old('status', $peminjaman->status) == 'diajukan' ? 'selected' : '' }}>Diajukan</option>
-        <option value="disetujui" {{ old('status', $peminjaman->status) == 'disetujui' ? 'selected' : '' }}>Disetujui</option>
-        <option value="ditolak" {{ old('status', $peminjaman->status) == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
-        <option value="dipinjam" {{ old('status', $peminjaman->status) == 'dipinjam' ? 'selected' : '' }}>Dipinjam</option>
-        <option value="selesai" {{ old('status', $peminjaman->status) == 'selesai' ? 'selected' : '' }}>Selesai</option>
+        @foreach (['diajukan' => 'Diajukan', 'disetujui' => 'Disetujui', 'ditolak' => 'Ditolak', 'dipinjam' => 'Dipinjam', 'diserahkan' => 'Diserahkan', 'selesai' => 'Selesai'] as $nilai => $label)
+            <option value="{{ $nilai }}" @selected(old('status', $peminjaman->status) == $nilai)>{{ $label }}</option>
+        @endforeach
     </select>
     @error('status')<div class="error">{{ $message }}</div>@enderror
 

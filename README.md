@@ -66,3 +66,26 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 | Pengguna | mahasiswa@sibiner.test | password123 |
 
 Akun dibuat oleh `PenggunaSeeder` (`php artisan db:seed --class=PenggunaSeeder`). Password disimpan dalam bentuk hash. Jangan memakai password ini di server produksi.
+
+## Hak Akses (RBAC)
+
+Role disimpan di kolom `peran` tabel `pengguna`. Pembatasan dilakukan di sisi server oleh `RoleMiddleware` (alias `role`), menu disesuaikan di Blade.
+
+| Fitur | Admin | Petugas | Pengguna |
+| --- | --- | --- | --- |
+| Dashboard | Ya (semua data) | Ya (semua data) | Ya (data sendiri) |
+| Kategori | Ya | - | - |
+| Daftar buku | Ya | Ya | Lihat |
+| Tambah, edit, hapus buku | Ya | Ya | - |
+| Daftar peminjaman | Semua | Semua | Milik sendiri |
+| Ajukan peminjaman | - | - | Ya |
+| Setujui, tolak, ubah, tandai dikembalikan | Ya | Ya | - |
+| Kembalikan e-book sendiri | - | - | Ya |
+
+| Role | Email | Password |
+| --- | --- | --- |
+| Admin | admin@sibiner.test | password123 |
+| Petugas | petugas@sibiner.test | password123 |
+| Pengguna | mahasiswa@sibiner.test | password123 |
+
+Akun demo hanya untuk pengujian lokal (`php artisan db:seed --class=PenggunaSeeder`).

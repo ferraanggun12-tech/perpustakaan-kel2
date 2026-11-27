@@ -101,3 +101,9 @@ form input[name="status"][value="ditolak"] ~ button { background: var(--danger);
 .sidebar-user-nama { font-weight: bold; color: #2d3748; }
 .sidebar-user small { color: #6c7a89; }
 .sidebar-user button { width: 100%; margin-top: 10px; background: #d64545; }
+
+/* status diserahkan */
+.badge.diserahkan { background: #8e6bd1; }
+
+/* status diserahkan */
+.badge.diserahkan { background: #8e6bd1; }
